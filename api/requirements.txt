@@ -1,0 +1,29 @@
+# Vercel Serverless Function Dependencies
+# This file is auto-read by @vercel/python runtime
+
+# Core
+python-dotenv>=1.0.0
+tenacity>=8.2.0
+sqlalchemy>=2.0.0
+
+# Data processing
+pandas>=2.0.0
+numpy>=1.24.0
+json-repair>=0.55.1
+
+# AI Analysis
+google-generativeai>=0.8.0
+openai>=1.0.0
+
+# Search engines
+tavily-python>=0.3.0
+google-search-results>=2.4.0
+
+# Web requests
+requests>=2.31.0
+markdown2>=2.4.0
+fake-useragent>=1.4.0
+httpx
+
+# Feishu SDK
+lark-oapi>=1.0.0
