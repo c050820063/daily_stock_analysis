@@ -1,0 +1,18 @@
+# Railway 部署配置
+# 详细说明: docs/DEPLOY_RAILWAY.md
+
+[build]
+# 使用 docker 目录下的 Dockerfile
+dockerfilePath = "docker/Dockerfile"
+
+[deploy]
+# 启动命令：WebUI + 定时任务模式
+startCommand = "python main.py --webui --schedule"
+# 健康检查路径
+healthcheckPath = "/health"
+# 健康检查超时（秒）
+healthcheckTimeout = 30
+# 重启策略
+restartPolicyType = "ON_FAILURE"
+# 最大重启次数
+restartPolicyMaxRetries = 3
