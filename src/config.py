@@ -369,8 +369,10 @@ class Config:
             schedule_time=os.getenv('SCHEDULE_TIME', '18:00'),
             market_review_enabled=os.getenv('MARKET_REVIEW_ENABLED', 'true').lower() == 'true',
             webui_enabled=os.getenv('WEBUI_ENABLED', 'false').lower() == 'true',
-            webui_host=os.getenv('WEBUI_HOST', '127.0.0.1'),
-            webui_port=int(os.getenv('WEBUI_PORT', '8000')),
+            # 当 PORT 环境变量存在时（Railway/Render/Heroku），默认绑定 0.0.0.0
+            webui_host=os.getenv('WEBUI_HOST') or ('0.0.0.0' if os.getenv('PORT') else '127.0.0.1'),
+            # Railway/Render/Heroku 使用 PORT 环境变量，优先读取
+            webui_port=int(os.getenv('PORT') or os.getenv('WEBUI_PORT', '8000')),
             # 机器人配置
             bot_enabled=os.getenv('BOT_ENABLED', 'true').lower() == 'true',
             bot_command_prefix=os.getenv('BOT_COMMAND_PREFIX', '/'),
