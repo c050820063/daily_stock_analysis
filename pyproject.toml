@@ -1,3 +1,10 @@
+[project]
+name = "daily-stock-analysis"
+version = "0.1.0"
+description = "A股自选股智能分析系统"
+requires-python = ">=3.10"
+dependencies = []
+
 [tool.black]
 line-length = 120
 target-version = ['py310', 'py311', 'py312']
