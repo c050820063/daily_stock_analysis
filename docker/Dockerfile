@@ -46,7 +46,9 @@ ENV WEBUI_PORT=8000
 EXPOSE 8000
 
 # 数据卷（持久化数据）
-VOLUME ["/app/data", "/app/logs", "/app/reports"]
+# 注意：不使用 VOLUME 指令，Railway 等平台不支持
+# 数据持久化请在平台配置中设置 Volumes
+# VOLUME ["/app/data", "/app/logs", "/app/reports"]
 
 # 健康检查（支持 WebUI 模式）
 HEALTHCHECK --interval=30s --timeout=10s --start-period=10s --retries=3 \
