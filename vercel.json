@@ -12,18 +12,10 @@
     "routes": [
         {
             "src": "/(.*)",
-            "dest": "/api/index.py"
-        }
-    ],
-    "headers": [
-        {
-            "source": "/(.*)",
-            "headers": [
-                {
-                    "key": "Cache-Control",
-                    "value": "public, max-age=0, must-revalidate"
-                }
-            ]
+            "dest": "/api/index.py",
+            "headers": {
+                "Cache-Control": "public, max-age=0, must-revalidate"
+            }
         }
     ]
 }
