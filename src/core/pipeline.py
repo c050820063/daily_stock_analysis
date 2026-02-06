@@ -694,14 +694,24 @@ class StockAnalysisPipeline:
             skip_push: 是否跳过推送（仅保存到本地，用于单股推送模式）
         """
         try:
-            logger.info("生成决策仪表盘日报...")
+            # Issue #119: 根据报告类型生成不同格式的日报
+            report_type_str = getattr(self.config, 'report_type', 'simple').lower()
+            is_full_report = (report_type_str == 'full')
             
-            # 生成决策仪表盘格式的详细日报
-            report = self.notifier.generate_dashboard_report(results)
+            report_name = "决策仪表盘" if is_full_report else "分析日报"
+            logger.info(f"生成{report_name}...")
+            
+            # 根据配置生成不同类型的报告
+            if is_full_report:
+                # 完整报告：使用决策仪表盘格式
+                report = self.notifier.generate_dashboard_report(results)
+            else:
+                # 精简报告：使用标准日报格式（默认）
+                report = self.notifier.generate_daily_report(results)
             
             # 保存到本地
             filepath = self.notifier.save_report_to_file(report)
-            logger.info(f"决策仪表盘日报已保存: {filepath}")
+            logger.info(f"{report_name}已保存: {filepath}")
             
             # 跳过推送（单股推送模式）
             if skip_push:
@@ -712,13 +722,19 @@ class StockAnalysisPipeline:
                 channels = self.notifier.get_available_channels()
                 context_success = self.notifier.send_to_context(report)
 
-                # 企业微信：只发精简版（平台限制）
+                # 企业微信：根据类型选择报告格式
                 wechat_success = False
                 if NotificationChannel.WECHAT in channels:
-                    dashboard_content = self.notifier.generate_wechat_dashboard(results)
-                    logger.info(f"企业微信仪表盘长度: {len(dashboard_content)} 字符")
-                    logger.debug(f"企业微信推送内容:\n{dashboard_content}")
-                    wechat_success = self.notifier.send_to_wechat(dashboard_content)
+                    if is_full_report:
+                        wechat_content = self.notifier.generate_wechat_dashboard(results)
+                        logger.info("企业微信: 使用仪表盘格式")
+                    else:
+                        wechat_content = self.notifier.generate_wechat_summary(results)
+                        logger.info("企业微信: 使用精简摘要格式")
+                        
+                    logger.info(f"企业微信推送内容长度: {len(wechat_content)} 字符")
+                    logger.debug(f"企业微信推送内容:\n{wechat_content}")
+                    wechat_success = self.notifier.send_to_wechat(wechat_content)
 
                 # 其他渠道：发完整报告（避免自定义 Webhook 被 wechat 截断逻辑污染）
                 non_wechat_success = False
@@ -743,12 +759,12 @@ class StockAnalysisPipeline:
                         non_wechat_success = self.notifier.send_to_astrbot(report) or non_wechat_success
                     else:
                         logger.warning(f"未知通知渠道: {channel}")
-
+                
                 success = wechat_success or non_wechat_success or context_success
                 if success:
-                    logger.info("决策仪表盘推送成功")
+                    logger.info(f"{report_name}推送成功")
                 else:
-                    logger.warning("决策仪表盘推送失败")
+                    logger.warning(f"{report_name}推送失败")
             else:
                 logger.info("通知渠道未配置，跳过推送")
                 
